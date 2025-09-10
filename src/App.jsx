@@ -2,7 +2,6 @@
 import AuthButton from './components/AuthButton';
 import CreditDisplay from './components/CreditDisplay';
 import AIRequestForm from './components/AIRequestForm';
-import EnvTest from './components/EnvTest';
 import './index.css';
 
 function App() {
@@ -12,7 +11,6 @@ function App() {
       <AuthButton />
       <CreditDisplay />
       <AIRequestForm />
-      <EnvTest />
     </div>
   );
 }
