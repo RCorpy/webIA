@@ -4,53 +4,82 @@ import axios from 'axios';
 import { auth } from '../firebase';
 import { onIdTokenChanged } from 'firebase/auth';
 
-// Configure a dedicated axios instance
+// Dedicated Axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // e.g. http://95.217.233.118:8000/api
-  withCredentials: false, // we only use Firebase token, not cookies
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: false, // Firebase token, no cookies
 });
 
-function CreditDisplay() {
-  const [credits, setCredits] = useState(0);
+// Token handling
+let currentToken = null;
+api.interceptors.request.use(
+  (config) => {
+    if (currentToken) {
+      config.headers.Authorization = `Bearer ${currentToken}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+function CreditDisplay({ credits, setCredits }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Fetch current credits from backend
+  const fetchCredits = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await api.get('/credits');
+      setCredits(response.data.credits);
+      return response;
+    } catch (err) {
+      setError('Failed to fetch credits: ' + (err.response?.data?.detail || err.message));
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add credits manually (for testing)
+  const addCredits = async (amount = 5) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.post(`/credits/add?amount=${amount}`);
+      if (res.data.credits_left !== undefined) {
+        setCredits(res.data.credits_left);
+      }
+    } catch (err) {
+      setError('Failed to add credits: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Listen to token changes
   useEffect(() => {
-    let unsubscribe;
-
-    const init = async () => {
-      unsubscribe = onIdTokenChanged(auth, async (user) => {
-        if (user) {
-          try {
-            const token = await user.getIdToken(true);
-
-            // Attach token to all requests automatically
-            api.interceptors.request.use((config) => {
-              config.headers.Authorization = `Bearer ${token}`;
-              return config;
-            });
-
-            console.log('Fetching credits...');
-            const response = await api.get('/credits');
-
-            setCredits(response.data.credits);
-            setError('');
-          } catch (err) {
-            console.error(err);
-            setError('Failed to fetch credits: ' + err.message);
-          } finally {
-            setLoading(false);
-          }
-        } else {
-          setCredits(0);
-          setError('Not logged in');
+    const unsubscribe = onIdTokenChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const token = await user.getIdToken(true);
+          currentToken = token;
+          await fetchCredits();
+        } catch (err) {
+          console.error('Token fetch error:', err);
+          setError('Failed to authenticate: ' + err.message);
           setLoading(false);
         }
-      });
-    };
+      } else {
+        currentToken = null;
+        setCredits(0);
+        setError('Not logged in');
+        setLoading(false);
+      }
+    });
 
-    init();
-    return () => unsubscribe && unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   if (loading) return <p>Loading credits...</p>;
@@ -59,6 +88,12 @@ function CreditDisplay() {
     <div>
       <h2>Credits: {credits}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button onClick={fetchCredits} disabled={loading}>
+        {loading ? 'Loading...' : 'Refresh Credits'}
+      </button>
+      <button onClick={() => addCredits(5)} disabled={loading} style={{ marginLeft: '10px' }}>
+        +5 Credits
+      </button>
     </div>
   );
 }

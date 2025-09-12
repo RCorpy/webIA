@@ -5,7 +5,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { auth } from '../firebase';
 
-function AIRequestForm() {
+function AIRequestForm({ setCredits }) {
   const [input, setInput] = useState('');
   const [response, setResponse] = useState('');
   const [error, setError] = useState('');
@@ -18,12 +18,18 @@ function AIRequestForm() {
     try {
       const token = await auth.currentUser?.getIdToken();
       if (!token) throw new Error('Not authenticated');
+
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/ai`,
         { input },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setResponse(res.data.output || 'Success'); // Adjust based on AI API response
+
+      setResponse(res.data.output || 'Success');
+
+      if (res.data.credits_left !== undefined) {
+        setCredits(res.data.credits_left); // 🔑 update lifted state
+      }
     } catch (err) {
       setError('Error: ' + (err.response?.data?.detail || err.message));
     }
