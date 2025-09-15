@@ -20,8 +20,14 @@ function App() {
   return (
     <Router>
       <AuthWatcher setUser={setUser} setLoading={setLoading} />
-      {/* 🔑 AuthButton always visible, positioned top-right */}
-      <AuthButton />
+      
+      {/* Floating AuthButton only if NOT logged in */}
+      {!user && (
+        <div className="fixed top-4 right-4 z-50">
+          <AuthButton />
+        </div>
+      )}
+
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -44,6 +50,7 @@ function App() {
         </Routes>
       )}
     </Router>
+
   );
 }
 

@@ -1,16 +1,14 @@
 // src/components/CreditDisplay.jsx
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { auth } from '../firebase';
-import { onIdTokenChanged } from 'firebase/auth';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { auth } from "../firebase";
+import { onIdTokenChanged } from "firebase/auth";
 
-// Dedicated Axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: false, // Firebase token, no cookies
+  withCredentials: false,
 });
 
-// Token handling
 let currentToken = null;
 api.interceptors.request.use(
   (config) => {
@@ -23,42 +21,43 @@ api.interceptors.request.use(
 );
 
 function CreditDisplay({ credits, setCredits }) {
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Fetch current credits from backend
   const fetchCredits = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
-      const response = await api.get('/credits');
+      const response = await api.get("/credits");
       setCredits(response.data.credits);
-      return response;
     } catch (err) {
-      setError('Failed to fetch credits: ' + (err.response?.data?.detail || err.message));
-      return null;
+      setError(
+        "Failed to fetch credits: " +
+          (err.response?.data?.detail || err.message)
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Add credits manually (for testing)
   const addCredits = async (amount = 5) => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const res = await api.post(`/credits/add?amount=${amount}`);
       if (res.data.credits_left !== undefined) {
         setCredits(res.data.credits_left);
       }
     } catch (err) {
-      setError('Failed to add credits: ' + (err.response?.data?.detail || err.message));
+      setError(
+        "Failed to add credits: " +
+          (err.response?.data?.detail || err.message)
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Listen to token changes
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
       if (user) {
@@ -67,14 +66,14 @@ function CreditDisplay({ credits, setCredits }) {
           currentToken = token;
           await fetchCredits();
         } catch (err) {
-          console.error('Token fetch error:', err);
-          setError('Failed to authenticate: ' + err.message);
+          console.error("Token fetch error:", err);
+          setError("Failed to authenticate: " + err.message);
           setLoading(false);
         }
       } else {
         currentToken = null;
         setCredits(0);
-        setError('Not logged in');
+        setError("Not logged in");
         setLoading(false);
       }
     });
@@ -82,18 +81,28 @@ function CreditDisplay({ credits, setCredits }) {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <p>Loading credits...</p>;
+  if (loading) return <p className="text-gray-500">Loading credits...</p>;
 
   return (
-    <div>
-      <h2>Credits: {credits}</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button onClick={fetchCredits} disabled={loading}>
-        {loading ? 'Loading...' : 'Refresh Credits'}
-      </button>
-      <button onClick={() => addCredits(5)} disabled={loading} style={{ marginLeft: '10px' }}>
-        +5 Credits
-      </button>
+    <div className="mt-6 p-4 border rounded-lg shadow bg-white">
+      <h2 className="text-lg font-semibold mb-2">Credits: {credits}</h2>
+      {error && <p className="text-red-500 mb-2">{error}</p>}
+      <div className="flex gap-3">
+        <button
+          onClick={fetchCredits}
+          disabled={loading}
+          className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow transition disabled:opacity-50"
+        >
+          Refresh Credits
+        </button>
+        <button
+          onClick={() => addCredits(5)}
+          disabled={loading}
+          className="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow transition disabled:opacity-50"
+        >
+          +5 Credits
+        </button>
+      </div>
     </div>
   );
 }

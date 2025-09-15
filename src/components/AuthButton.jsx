@@ -20,13 +20,21 @@ function AuthButton() {
   };
 
   return (
-    <div>
+    <div className="mt-4">
       {auth.currentUser ? (
-        <button onClick={handleLogout}>
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition"
+        >
           Logout ({auth.currentUser.email})
         </button>
       ) : (
-        <button onClick={handleLogin}>Login with Google</button>
+        <button
+          onClick={handleLogin}
+          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition"
+        >
+          Login with Google
+        </button>
       )}
     </div>
   );
