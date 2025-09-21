@@ -1,11 +1,16 @@
-// src/pages/MainPage.jsx
 import CreditDisplay from "../components/CreditDisplay";
 import AIRequestForm from "../components/AIRequestForm";
+import Results from "../components/Results";
 import { useState } from "react";
 import AuthButton from "../components/AuthButton";
 
 function MainPage({ credits, setCredits }) {
   const [selectedOption, setSelectedOption] = useState("text-to-image");
+  const [results, setResults] = useState([]);
+
+  const addResult = (newResult) => {
+    setResults((prev) => [newResult, ...prev]); // newest first
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -56,16 +61,15 @@ function MainPage({ credits, setCredits }) {
         {/* Top half: results */}
         <div className="flex-1 p-6 overflow-auto bg-gray-100">
           <h2 className="text-xl font-semibold mb-4">Results</h2>
-          <div className="border border-gray-300 rounded-lg bg-white p-6 h-full shadow-sm">
-            {/* Placeholder */}
-            <p className="text-gray-500">No results yet...</p>
-          </div>
+            <div className="border border-gray-300 rounded-lg bg-white p-6 shadow-sm">
+              <Results results={results} />
+            </div>
         </div>
 
         {/* Bottom half: input */}
         <div className="p-6 border-t bg-white shadow-md">
           <h2 className="text-lg font-semibold mb-4">Your Prompt</h2>
-          <AIRequestForm setCredits={setCredits} />
+          <AIRequestForm setCredits={setCredits} addResult={addResult} />
           <CreditDisplay credits={credits} setCredits={setCredits} />
         </div>
       </main>

@@ -1,71 +1,115 @@
-import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
-import { auth } from '../firebase';
+import React, { useState } from "react";
+import axios from "axios";
+import { auth } from "../firebase";
 
-function AIRequestForm({ setCredits }) {
-  const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
-  const [error, setError] = useState('');
-  const textareaRef = useRef(null);
-  const MAX_HEIGHT = 250; // max height in px (about 10rem)
+export default function AIRequestForm({ setCredits, addResult }) {
+  const [prompt, setPrompt] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Auto-grow logic
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto'; // reset
-      textarea.style.height = Math.min(textarea.scrollHeight, MAX_HEIGHT) + 'px';
+  const pollTaskStatus = async (taskId, retries = 20, interval = 2000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const statusRes = await axios.get(`http://localhost:8000/api/ai/status/${taskId}`);
+        const status = statusRes.data.status;
+
+        if (status === "Ready") {
+          return statusRes.data.output;
+        } else if (status === "Failed") {
+          throw new Error("BFL task failed.");
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+        throw err;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, interval));
     }
-  }, [input]);
+    throw new Error("BFL polling timed out.");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setResponse('');
+    if (!prompt.trim()) return;
+
+    setLoading(true);
+    setError(null);
 
     try {
-      const token = await auth.currentUser?.getIdToken();
-      if (!token) throw new Error('Not authenticated');
+      const user = auth.currentUser;
+      if (!user) throw new Error("You must be logged in");
 
+      const idToken = await user.getIdToken();
+
+      // 1️⃣ Create AI task
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/ai`,
-        { input },
-        { headers: { Authorization: `Bearer ${token}` } }
+        "http://localhost:8000/api/ai",
+        { input: prompt },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
       );
 
-      setResponse(res.data.output || 'Success');
+      const { task_id, credits_left } = res.data;
+      setCredits(credits_left);
 
-      if (res.data.credits_left !== undefined) {
-        setCredits(res.data.credits_left);
-      }
+      // 2️⃣ Poll until image is ready
+      const outputUrl = await pollTaskStatus(task_id);
+
+      // 3️⃣ Add result to the UI
+      addResult({ url: outputUrl, prompt });
+      setPrompt("");
     } catch (err) {
-      setError('Error: ' + (err.response?.data?.detail || err.message));
+      console.error(err);
+
+      let message =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Unknown error";
+
+      // Handle BFL-specific errors
+      switch (err.response?.status) {
+        case 402:
+          message = "Insufficient credits. Please add more.";
+          break;
+        case 403:
+          message = "Your prompt was blocked by content filter.";
+          break;
+        case 429:
+          message = "Too many requests. Please wait and try again.";
+          break;
+        default:
+          break;
+      }
+
+      setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter your prompt"
-          className="w-full p-2 border rounded resize-none overflow-y-auto"
-          rows={2}
-          style={{ maxHeight: `${MAX_HEIGHT}px` }}
-        />
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Type your prompt here..."
+        className="w-full border rounded p-2"
+        rows={3}
+      />
+      <div className="flex items-center space-x-2">
         <button
           type="submit"
-          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          disabled={loading}
+          className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          Submit
+          {loading ? "Generating..." : "Generate"}
         </button>
-      </form>
-      {response && <p className="mt-2">Response: {response}</p>}
-      {error && <p className="mt-2 text-red-600">{error}</p>}
-    </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+      </div>
+    </form>
   );
 }
-
-export default AIRequestForm;
