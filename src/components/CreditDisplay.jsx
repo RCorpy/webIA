@@ -85,7 +85,7 @@ function CreditDisplay({ credits, setCredits }) {
 
   return (
     <div className="mt-6 p-4 border rounded-lg shadow bg-white">
-      <h2 className="text-lg font-semibold mb-2">Credits: {credits}</h2>
+      <h2 className="text-lg font-semibold mb-2 text-black">Credits: {credits}</h2>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <div className="flex gap-3">
         <button

@@ -10,13 +10,23 @@ export default function AIRequestForm({ setCredits, addResult }) {
   const pollTaskStatus = async (taskId, retries = 20, interval = 2000) => {
     for (let i = 0; i < retries; i++) {
       try {
-        const statusRes = await axios.get(`http://localhost:8000/api/ai/status/${taskId}`);
+        const statusRes = await axios.get(
+          `http://localhost:8000/api/ai/status/${taskId}`
+        );
+
+        // Always update credits from the backend
+        if (statusRes.data.credits_left !== undefined) {
+          setCredits(statusRes.data.credits_left);
+        }
+
         const status = statusRes.data.status;
 
         if (status === "Ready") {
           return statusRes.data.output;
         } else if (status === "Failed") {
-          throw new Error("BFL task failed.");
+          // Show detailed reason if available
+          const detail = statusRes.data.detail || "BFL task failed.";
+          throw new Error(detail);
         }
       } catch (err) {
         console.error("Polling error:", err);
@@ -46,14 +56,14 @@ export default function AIRequestForm({ setCredits, addResult }) {
         "http://localhost:8000/api/ai",
         { input: prompt },
         {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
+          headers: { Authorization: `Bearer ${idToken}` },
         }
       );
 
       const { task_id, credits_left } = res.data;
-      setCredits(credits_left);
+
+      // Update credits after task creation (might still be the same)
+      if (credits_left !== undefined) setCredits(credits_left);
 
       // 2️⃣ Poll until image is ready
       const outputUrl = await pollTaskStatus(task_id);
@@ -64,26 +74,11 @@ export default function AIRequestForm({ setCredits, addResult }) {
     } catch (err) {
       console.error(err);
 
-      let message =
+      const message =
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
         "Unknown error";
-
-      // Handle BFL-specific errors
-      switch (err.response?.status) {
-        case 402:
-          message = "Insufficient credits. Please add more.";
-          break;
-        case 403:
-          message = "Your prompt was blocked by content filter.";
-          break;
-        case 429:
-          message = "Too many requests. Please wait and try again.";
-          break;
-        default:
-          break;
-      }
 
       setError(message);
     } finally {

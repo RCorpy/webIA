@@ -1,8 +1,10 @@
-// src/components/Results.jsx
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import Lightbox from "./LightBox";
 
 export default function Results({ results }) {
+  const [preview, setPreview] = useState(null);
+
   if (!results.length) {
     return <p className="text-gray-500">No results yet...</p>;
   }
@@ -28,29 +30,31 @@ export default function Results({ results }) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {results.map((item, index) => (
-        <div
-          key={index}
-          className="relative rounded-lg shadow-sm bg-white overflow-hidden"
-        >
-          <img
-            src={item.url}
-            alt={`Result ${index + 1}`}
-            className="w-full object-contain"
-            style={{ maxHeight: "400px" }}
-          />
-          {/* Floating transparent download button */}
-          <button
-            onClick={() =>
-              downloadImage(item.url, `ai-result-${index + 1}.png`)
-            }
-            className="absolute top-2 right-2 bg-transparent hover:bg-white/70 text-gray-800 p-1 rounded-full shadow z-10"
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {results.map((item, index) => (
+          <div
+            key={index}
+            className="relative rounded-lg shadow-sm bg-white overflow-hidden"
           >
-            ⬇️
-          </button>
-        </div>
-      ))}
-    </div>
+            <img
+              src={item.url}
+              alt={`Result ${index + 1}`}
+              className="w-full object-contain cursor-pointer"
+              style={{ maxHeight: "400px" }}
+              onClick={() => setPreview(item.url)}
+            />
+            <button
+              onClick={() => downloadImage(item.url, `ai-result-${index + 1}.png`)}
+              className="absolute top-2 right-2 bg-transparent hover:bg-black/30 text-gray-800 p-1 rounded-full shadow z-10"
+            >
+              ⬇️
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {preview && <Lightbox src={preview} onClose={() => setPreview(null)} />}
+    </>
   );
 }
