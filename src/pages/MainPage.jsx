@@ -9,6 +9,8 @@ function MainPage({ credits, setCredits }) {
   const [selectedOption, setSelectedOption] = useState("text-to-image"); // text-to-image, image-to-image, text-to-video
   const [model, setModel] = useState("default-model"); // placeholder
   const [aspectRatio, setAspectRatio] = useState("1:1"); // default ratio
+  const [dimensions, setDimensions] = useState({ width: 1024, height: 1024 }); // for Flux-Pro
+
 
   const addResult = (newResult) => {
     setResults((prev) => [newResult, ...prev]); // newest first
@@ -31,6 +33,8 @@ function MainPage({ credits, setCredits }) {
           setModel={setModel}
           aspectRatio={aspectRatio}
           setAspectRatio={setAspectRatio}
+          dimensions={dimensions}
+          setDimensions={setDimensions}
         />
       </div>
 
@@ -71,6 +75,7 @@ function MainPage({ credits, setCredits }) {
               selectedOption={selectedOption}
               model={model}
               aspectRatio={aspectRatio}
+              dimensions={dimensions}
             />
         </div>
       </main>

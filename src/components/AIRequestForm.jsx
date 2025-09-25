@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 
-export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio }) {
+export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio, dimensions }) {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,10 +48,15 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
 
       // Build parameters (future-proof)
       const parameters = {};
-      if (aspectRatio) {
-        parameters.aspect_ratio = aspectRatio;
+
+      if (model === "flux-pro-1.1-model") {
+        parameters.width = dimensions.width;
+        parameters.height = dimensions.height;
+      } else {
+        if (aspectRatio) {
+          parameters.aspect_ratio = aspectRatio;
+        }
       }
-      // In the future: if (width && height) { parameters.width = width; parameters.height = height; }
 
       // 1️⃣ Create AI task
       const res = await axios.post(
