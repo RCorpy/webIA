@@ -3,8 +3,7 @@ import { useState } from "react";
 import CreditDisplay from "./CreditDisplay";
 import AuthButton from "./AuthButton";
 
-export default function SideBar({ credits, setCredits }) {
-  const [selectedOption, setSelectedOption] = useState("text-to-image");
+export default function SideBar({ credits, setCredits, selectedOption, setSelectedOption, model, setModel, aspectRatio, setAspectRatio }) {
 
   const menuItems = [
     { key: "text-to-image", label: "Text → Image" },
@@ -13,12 +12,12 @@ export default function SideBar({ credits, setCredits }) {
   ];
 
   return (
-    <aside className="w-64 bg-gray-900 text-white flex flex-col">
+    <aside className="h-full w-64 bg-gray-900 text-white flex flex-col">
       <div className="p-4 border-b border-gray-700">
         <h2 className="text-lg font-bold">Options</h2>
       </div>
 
-      <ul className="flex-1 p-4 space-y-2">
+      <ul className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => (
           <li
             key={item.key}
@@ -32,7 +31,42 @@ export default function SideBar({ credits, setCredits }) {
         ))}
       </ul>
 
-      <div className="p-4 border-t border-gray-700 flex flex-col gap-4">
+      <div className="p-4 border-t border-gray-700 text-white flex flex-col gap-4">
+        <div>
+          <h3 className="text-sm font-semibold mb-2">Model</h3>
+          <select
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            className="w-full p-2 rounded text-white"
+          >
+            {selectedOption === "text-to-image" && (
+              <>
+                <option className="text-black" value="default-model">Default Model</option>
+                <option className="text-black" value="high-quality-model">High Quality</option>
+              </>
+            )}
+            {selectedOption === "image-to-image" && (
+              <>
+                <option className="text-black" value="editing-model">Image Editing</option>
+                <option  className="text-black"alue="inpainting-model">Inpainting</option>
+              </>
+            )}
+          </select>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-semibold mb-2">Aspect Ratio</h3>
+          <select
+            value={aspectRatio}
+            onChange={(e) => setAspectRatio(e.target.value)}
+            className="w-full p-2 rounded text-white"
+          >
+            <option className="text-black" value="1:1">Square (1:1)</option>
+            <option className="text-black" value="16:9">Landscape (16:9)</option>
+            <option className="text-black" value="9:16">Portrait (9:16)</option>
+          </select>
+        </div>
+
         <CreditDisplay credits={credits} setCredits={setCredits} />
         <AuthButton />
       </div>

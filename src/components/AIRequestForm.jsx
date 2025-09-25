@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 
-export default function AIRequestForm({ setCredits, addResult }) {
+export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio }) {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,25 +14,20 @@ export default function AIRequestForm({ setCredits, addResult }) {
           `http://localhost:8000/api/ai/status/${taskId}`
         );
 
-        // Always update credits from the backend
         if (statusRes.data.credits_left !== undefined) {
           setCredits(statusRes.data.credits_left);
         }
 
         const status = statusRes.data.status;
-
         if (status === "Ready") {
           return statusRes.data.output;
         } else if (status === "Failed") {
-          // Show detailed reason if available
-          const detail = statusRes.data.detail || "BFL task failed.";
-          throw new Error(detail);
+          throw new Error(statusRes.data.detail || "BFL task failed.");
         }
       } catch (err) {
         console.error("Polling error:", err);
         throw err;
       }
-
       await new Promise((resolve) => setTimeout(resolve, interval));
     }
     throw new Error("BFL polling timed out.");
@@ -51,35 +46,42 @@ export default function AIRequestForm({ setCredits, addResult }) {
 
       const idToken = await user.getIdToken();
 
+      // Build parameters (future-proof)
+      const parameters = {};
+      if (aspectRatio) {
+        parameters.aspect_ratio = aspectRatio;
+      }
+      // In the future: if (width && height) { parameters.width = width; parameters.height = height; }
+
       // 1️⃣ Create AI task
       const res = await axios.post(
         "http://localhost:8000/api/ai",
-        { input: prompt },
+        {
+          input: prompt,
+          model: model,          // ✅ Explicit model
+          parameters: parameters // ✅ Flexible parameters
+        },
         {
           headers: { Authorization: `Bearer ${idToken}` },
         }
       );
 
       const { task_id, credits_left } = res.data;
-
-      // Update credits after task creation (might still be the same)
       if (credits_left !== undefined) setCredits(credits_left);
 
-      // 2️⃣ Poll until image is ready
+      // 2️⃣ Poll until ready
       const outputUrl = await pollTaskStatus(task_id);
 
-      // 3️⃣ Add result to the UI
+      // 3️⃣ Add result
       addResult({ url: outputUrl, prompt });
       setPrompt("");
     } catch (err) {
       console.error(err);
-
       const message =
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
         "Unknown error";
-
       setError(message);
     } finally {
       setLoading(false);

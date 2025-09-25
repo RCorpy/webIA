@@ -31,17 +31,17 @@ export default function Results({ results }) {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {results.map((item, index) => (
           <div
             key={index}
-            className="relative rounded-lg shadow-sm bg-white overflow-hidden"
+            className="relative rounded-lg shadow-sm bg-white overflow-hidden flex items-center justify-center"
+            style={{ height: "400px" }}
           >
             <img
               src={item.url}
               alt={`Result ${index + 1}`}
-              className="w-full object-contain cursor-pointer"
-              style={{ maxHeight: "400px" }}
+              className="max-h-full max-w-full object-contain cursor-pointer"
               onClick={() => setPreview(item.url)}
             />
             <button
@@ -51,6 +51,7 @@ export default function Results({ results }) {
               ⬇️
             </button>
           </div>
+
         ))}
       </div>
 
