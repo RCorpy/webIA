@@ -79,7 +79,7 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
 
       // 3️⃣ Add result
       addResult({ url: outputUrl, prompt });
-      setPrompt("");
+      //setPrompt("");
     } catch (err) {
       console.error(err);
       const message =

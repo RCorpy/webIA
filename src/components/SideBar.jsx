@@ -53,6 +53,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
               <>
                 <option className="text-black" value="kontext-model">Kontext Model</option>
                 <option className="text-black" value="flux-pro-1.1-model">Flux-pro-1.1 model</option>
+                <option className="text-black" value="flux-pro-1.1-ultra-model">Flux-pro-1.1 ULTRA model</option>
               </>
             )}
             {selectedOption === "image-to-image" && (
