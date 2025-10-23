@@ -4,6 +4,8 @@ import AIRequestForm from "../components/AIRequestForm";
 import Results from "../components/Results";
 
 function MainPage({ credits, setCredits }) {
+  const [isRaw, setIsRaw] = useState(false);
+  const [inputImage, setInputImage] = useState(null);
   const [results, setResults] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("text-to-image"); // text-to-image, image-to-image, text-to-video
@@ -30,11 +32,15 @@ function MainPage({ credits, setCredits }) {
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
           model={model}
+          setIsRaw={setIsRaw}
+          isRaw={isRaw}
           setModel={setModel}
           aspectRatio={aspectRatio}
           setAspectRatio={setAspectRatio}
           dimensions={dimensions}
           setDimensions={setDimensions}
+          inputImage={inputImage}
+          setInputImage={setInputImage}
         />
       </div>
 
@@ -76,6 +82,8 @@ function MainPage({ credits, setCredits }) {
               model={model}
               aspectRatio={aspectRatio}
               dimensions={dimensions}
+              isRaw={isRaw}
+              inputImage={inputImage}
             />
         </div>
       </main>

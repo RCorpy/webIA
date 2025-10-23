@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 
-export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio, dimensions }) {
+export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio, dimensions, isRaw }) {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -56,6 +56,10 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
         if (aspectRatio) {
           parameters.aspect_ratio = aspectRatio;
         }
+      }
+
+      if (model ==="flux-pro-1.1-ultra-model") {
+        parameters.raw = isRaw;
       }
 
       // 1️⃣ Create AI task
