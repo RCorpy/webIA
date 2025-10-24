@@ -30,7 +30,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
               if (item.key === "text-to-image") {
                 setModel("kontext-model");
               } else if (item.key === "image-to-image") {
-                setModel("editing-model");
+                setModel("kontext-model");
               } else if (item.key === "text-to-video") {
                 setModel("video-model"); // placeholder until we know the API
               }
@@ -46,6 +46,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
           <h3 className="text-sm font-semibold mb-2">Model</h3>
           <select
             value={model}
+            onClick={(e) => e.stopPropagation()}
             onChange={(e) => setModel(e.target.value)}
             className="w-full p-2 rounded text-white"
           >
@@ -59,8 +60,8 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
             {selectedOption === "image-to-image" && (
               <>
                 <option className="text-black" value="kontext-model">Kontext</option>
-                <option  className="text-black"alue="flux-pro-1.1-ultra-model">Ultra</option>
-                <option  className="text-black"alue="flux-pro-1.0-fill-model">Fill</option>
+                <option  className="text-black" value="flux-pro-1.1-ultra-model">Ultra</option>
+                <option  className="text-black" value="flux-pro-1.0-fill-model">Fill</option>
               </>
             )}
           </select>
@@ -129,6 +130,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
                     ) : (
                       <select 
                         value={aspectRatio}
+                        onClick={(e) => e.stopPropagation()}
                         onChange={(e) => setAspectRatio(e.target.value)}
                         className="w-full p-2 rounded text-white"
                       >
@@ -144,6 +146,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
                         </h3>
                         <select 
                           value={isRaw}
+                          onClick={(e) => e.stopPropagation()}
                           onChange={(e) => setIsRaw(e.target.value)}
                           className="w-full p-2 rounded text-white"
                         >
@@ -196,6 +199,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
     {/* Aspect Ratio Selector */}
     <select
       value={aspectRatio}
+      onClick={(e) => e.stopPropagation()}
       onChange={(e) => setAspectRatio(e.target.value)}
       className="w-full p-2 rounded text-white bg-gray-800 border border-gray-600"
     >
