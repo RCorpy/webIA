@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SideBar from "../components/SideBar";
 import AIRequestForm from "../components/AIRequestForm";
 import Results from "../components/Results";
+import MaskEditor from "../components/MaskEditor";
+
 
 function MainPage({ credits, setCredits }) {
   const [isRaw, setIsRaw] = useState(false);
@@ -12,7 +14,16 @@ function MainPage({ credits, setCredits }) {
   const [model, setModel] = useState("default-model"); // placeholder
   const [aspectRatio, setAspectRatio] = useState("1:1"); // default ratio
   const [dimensions, setDimensions] = useState({ width: 1024, height: 1024 }); // for Flux-Pro
+  const [maskImage, setMaskImage] = useState(null);
+  const [showMaskEditor, setShowMaskEditor] = useState(false);
 
+
+  // Automatically open mask editor when fill model is active and an image is set
+  useEffect(() => {
+    if (model === "flux-pro-1.0-fill-model" && inputImage) {
+      setShowMaskEditor(true);
+    }
+  }, [model, inputImage]);
 
   const addResult = (newResult) => {
     setResults((prev) => [newResult, ...prev]); // newest first
@@ -41,6 +52,9 @@ function MainPage({ credits, setCredits }) {
           setDimensions={setDimensions}
           inputImage={inputImage}
           setInputImage={setInputImage}
+          maskImage={maskImage}
+          setMaskImage={setMaskImage}
+          setShowMaskEditor={setShowMaskEditor}
         />
       </div>
 
@@ -49,6 +63,16 @@ function MainPage({ credits, setCredits }) {
         <div
           className="fixed inset-0 z-30"
           onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mask Editor Modal */}
+      {showMaskEditor && (
+        <MaskEditor
+          imageBase64={inputImage}
+          existingMaskBase64={maskImage}  // ← the saved mask
+          onSave={(newMask) => setMaskImage(newMask)}
+          onClose={() => setShowMaskEditor(false)}
         />
       )}
 

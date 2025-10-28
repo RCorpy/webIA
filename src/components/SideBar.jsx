@@ -3,7 +3,8 @@ import { useState } from "react";
 import CreditDisplay from "./CreditDisplay";
 import AuthButton from "./AuthButton";
 
-export default function SideBar({ credits, setCredits, selectedOption, setSelectedOption, model, setModel, aspectRatio, setAspectRatio, dimensions, setDimensions,inputImage, setInputImage, isRaw, setIsRaw }) {
+export default function SideBar({ credits, setCredits, selectedOption, setSelectedOption, model, setModel, aspectRatio, setAspectRatio,
+   dimensions, setDimensions,inputImage, setInputImage, isRaw, setIsRaw, maskImage, setMaskImage, setShowMaskEditor }) {
 
   const menuItems = [
     { key: "text-to-image", label: "Text → Image" },
@@ -165,11 +166,22 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
       onClick={() => document.getElementById("image-upload-input").click()}
     >
       {inputImage ? (
-        <img
-          src={`data:image/png;base64,${inputImage}`}
-          alt="Preview"
-          className="w-32 h-32 object-cover rounded-lg border border-gray-600 shadow-md hover:opacity-80 transition"
-        />
+        <div className="relative w-32 h-32">
+          <img
+            src={`data:image/png;base64,${inputImage}`}
+            alt="Preview"
+            className="w-32 h-32 object-cover rounded-lg border border-gray-600 shadow-md hover:opacity-80 transition"
+          />
+      {/* If a mask exists, overlay it */}
+        {model === "flux-pro-1.0-fill-model" && maskImage && (
+          <>
+          <img
+            src={`data:image/png;base64,${maskImage}`}
+            alt="Mask overlay"
+            className="absolute top-0 left-0 w-full h-full object-cover rounded-lg opacity-50 mix-blend-screen pointer-events-none"
+          /></>
+        )}
+        </div>
       ) : (
         <div className="w-32 h-32 flex items-center justify-center rounded-lg border border-dashed border-gray-600 text-sm text-gray-400 hover:bg-gray-800 transition">
           Click to upload
@@ -195,6 +207,23 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
       }}
       className="hidden"
     />
+    {/* Mask action buttons */}
+    {model === "flux-pro-1.0-fill-model" && (
+      <div className="flex justify-center gap-2 mb-3">
+        <button
+          onClick={() => setMaskImage(null)}
+          className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition"
+        >
+          Reset Mask
+        </button>
+        <button
+          onClick={() => setShowMaskEditor(true)}
+          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition"
+        >
+          Modify Mask
+        </button>
+      </div>
+    )}
 
     {/* Aspect Ratio Selector */}
     <select
