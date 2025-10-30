@@ -16,6 +16,8 @@ function MainPage({ credits, setCredits }) {
   const [dimensions, setDimensions] = useState({ width: 1024, height: 1024 }); // for Flux-Pro
   const [maskImage, setMaskImage] = useState(null);
   const [showMaskEditor, setShowMaskEditor] = useState(false);
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imageHeight, setImageHeight] = useState(0); 
 
 
   // Automatically open mask editor when fill model is active and an image is set
@@ -55,6 +57,8 @@ function MainPage({ credits, setCredits }) {
           maskImage={maskImage}
           setMaskImage={setMaskImage}
           setShowMaskEditor={setShowMaskEditor}
+          setImageHeight={setImageHeight}
+          setImageWidth={setImageWidth}
         />
       </div>
 
@@ -73,6 +77,8 @@ function MainPage({ credits, setCredits }) {
           existingMaskBase64={maskImage}  // ← the saved mask
           onSave={(newMask) => setMaskImage(newMask)}
           onClose={() => setShowMaskEditor(false)}
+          imageWidth={imageWidth}
+          imageHeight={imageHeight}
         />
       )}
 

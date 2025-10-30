@@ -4,7 +4,7 @@ import CreditDisplay from "./CreditDisplay";
 import AuthButton from "./AuthButton";
 
 export default function SideBar({ credits, setCredits, selectedOption, setSelectedOption, model, setModel, aspectRatio, setAspectRatio,
-   dimensions, setDimensions,inputImage, setInputImage, isRaw, setIsRaw, maskImage, setMaskImage, setShowMaskEditor }) {
+   dimensions, setDimensions,inputImage, setInputImage, isRaw, setIsRaw, maskImage, setMaskImage, setShowMaskEditor, setImageWidth, setImageHeight }) {
 
   const menuItems = [
     { key: "text-to-image", label: "Text → Image" },
@@ -196,15 +196,24 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
       accept="image/*"
       onChange={async (e) => {
         const file = e.target.files?.[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64 = reader.result.split(",")[1];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = reader.result.split(",")[1];
+          
+          // Create an image to read its real dimensions
+          const img = new Image();
+          img.onload = () => {
             setInputImage(base64);
+            setImageHeight(img.naturalHeight);
+            setImageWidth(img.naturalWidth);
           };
-          reader.readAsDataURL(file);
-        }
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
       }}
+
       className="hidden"
     />
     {/* Mask action buttons */}
