@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { auth } from "../firebase";
 
-export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio, dimensions, isRaw, inputImage }) {
+export default function AIRequestForm({ setCredits, addResult, selectedOption, model, aspectRatio, dimensions, isRaw, inputImage, maskImage }) {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -53,23 +53,7 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
       // Build parameters (future-proof)
       const parameters = {};
       parameters.sidebar_option = selectedOption;
-      if(selectedOption==="image-to-image") {
-        if (model === "kontext-model"){
-          parameters.aspect_ratio = aspectRatio;
-          parameters.input_image = inputImage;
-        }
-        else if (model ==="flux-pro-1.1-ultra-model") {
-          parameters.aspect_ratio = aspectRatio;
-          parameters.input_image = inputImage;
-        }
-        else if (model === "flux-pro-1.0-fill-model") {
-          parameters.input_image = inputImage;
-          console.log("need the mask too")
-        }
-        else{
-          console.log("ERROR: model not supported", model)
-        }
-      }
+      // TEXT-TO-IMAGE
       if(selectedOption==="text-to-image") {
         if (model === "flux-pro-1.1-model") {
           parameters.width = dimensions.width;
@@ -81,6 +65,24 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
         if (model ==="flux-pro-1.1-ultra-model") {
           parameters.raw = isRaw;
           parameters.aspect_ratio = aspectRatio;
+        }
+      }
+      // IMAGE-TO-IMAGE
+      if(selectedOption==="image-to-image") {
+        if (model === "kontext-model"){
+          parameters.aspect_ratio = aspectRatio;
+          parameters.input_image = inputImage;
+        }
+        else if (model ==="flux-pro-1.1-ultra-model") {
+          parameters.aspect_ratio = aspectRatio;
+          parameters.input_image = inputImage;
+        }
+        else if (model === "flux-pro-1.0-fill-model") {
+          parameters.input_image = inputImage;
+          parameters.mask = maskImage
+        }
+        else{
+          console.log("ERROR: model not supported", model)
         }
       }
 

@@ -114,6 +114,7 @@ function MainPage({ credits, setCredits }) {
               dimensions={dimensions}
               isRaw={isRaw}
               inputImage={inputImage}
+              maskImage={maskImage}
             />
         </div>
       </main>
