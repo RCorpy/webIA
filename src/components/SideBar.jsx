@@ -60,7 +60,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
             )}
             {selectedOption === "image-to-image" && (
               <>
-                <option className="text-black" value="kontext-model">Kontext</option>
+                {/*<option className="text-black" value="kontext-model">Kontext</option>*/}
                 <option  className="text-black" value="flux-pro-1.1-ultra-model">Ultra</option>
                 <option  className="text-black" value="flux-pro-1.0-fill-model">Fill</option>
               </>
@@ -234,17 +234,19 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
       </div>
     )}
 
-    {/* Aspect Ratio Selector */}
-    <select
-      value={aspectRatio}
-      onClick={(e) => e.stopPropagation()}
-      onChange={(e) => setAspectRatio(e.target.value)}
-      className="w-full p-2 rounded text-white bg-gray-800 border border-gray-600"
-    >
-      <option className="text-black" value="1:1">Square (1:1)</option>
-      <option className="text-black" value="16:9">Landscape (16:9)</option>
-      <option className="text-black" value="9:16">Portrait (9:16)</option>
-    </select>
+    {/* Aspect Ratio Selector EXCLUDING WHEN ITS FILL MODEL */}
+    {(model != "flux-pro-1.0-fill-model") &&
+      <select
+        value={aspectRatio}
+        onClick={(e) => e.stopPropagation()}
+        onChange={(e) => setAspectRatio(e.target.value)}
+        className="w-full p-2 rounded text-white  border border-gray-600"
+      >
+        <option className="text-black" value="1:1">Square (1:1)</option>
+        <option className="text-black" value="16:9">Landscape (16:9)</option>
+        <option className="text-black" value="9:16">Portrait (9:16)</option>
+      </select>
+    }
   </>
 )}
 
