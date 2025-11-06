@@ -20,9 +20,10 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-function CreditDisplay({ credits, setCredits }) {
+function CreditDisplay({ credits, setCredits, setShowBuyCredits }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+
 
   const fetchCredits = async () => {
     setLoading(true);
@@ -102,6 +103,13 @@ function CreditDisplay({ credits, setCredits }) {
         >
           +5 Credits
         </button>
+        <button
+          onClick={() => setShowBuyCredits(true)}
+          className="bg-blue-600 text-white px-3 py-2 rounded"
+        >
+          Buy Credits
+        </button>
+
       </div>
     </div>
   );

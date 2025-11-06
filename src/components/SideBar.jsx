@@ -4,7 +4,7 @@ import CreditDisplay from "./CreditDisplay";
 import AuthButton from "./AuthButton";
 
 export default function SideBar({ credits, setCredits, selectedOption, setSelectedOption, model, setModel, aspectRatio, setAspectRatio,
-   dimensions, setDimensions,inputImage, setInputImage, isRaw, setIsRaw, maskImage, setMaskImage, setShowMaskEditor, setImageWidth, setImageHeight }) {
+   dimensions, setDimensions,inputImage, setInputImage, isRaw, setIsRaw, maskImage, setMaskImage, setShowMaskEditor, setImageWidth, setImageHeight, setShowBuyCredits }) {
 
   const menuItems = [
     { key: "text-to-image", label: "Text → Image" },
@@ -253,7 +253,7 @@ export default function SideBar({ credits, setCredits, selectedOption, setSelect
 
         </div>
 
-        <CreditDisplay credits={credits} setCredits={setCredits} />
+        <CreditDisplay credits={credits} setCredits={setCredits} setShowBuyCredits={setShowBuyCredits} />
         <AuthButton />
       </div>
     </aside>

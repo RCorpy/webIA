@@ -3,6 +3,7 @@ import SideBar from "../components/SideBar";
 import AIRequestForm from "../components/AIRequestForm";
 import Results from "../components/Results";
 import MaskEditor from "../components/MaskEditor";
+import BuyCreditsModal from "../components/BuyCreditsModal";
 
 
 function MainPage({ credits, setCredits }) {
@@ -12,6 +13,7 @@ function MainPage({ credits, setCredits }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("text-to-image"); // text-to-image, image-to-image, text-to-video
   const [model, setModel] = useState("default-model"); // placeholder
+  const [showBuyCredits, setShowBuyCredits] = useState(false);
   const [aspectRatio, setAspectRatio] = useState("1:1"); // default ratio
   const [dimensions, setDimensions] = useState({ width: 1024, height: 1024 }); // for Flux-Pro
   const [maskImage, setMaskImage] = useState(null);
@@ -33,6 +35,9 @@ function MainPage({ credits, setCredits }) {
 
   return (
     <div className="flex h-screen bg-gray-50 relative">
+      {/* Buy Credits Modal */}
+      {showBuyCredits && <BuyCreditsModal setShowBuyCredits={setShowBuyCredits} />}
+
       {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-40 transform ${
@@ -40,6 +45,7 @@ function MainPage({ credits, setCredits }) {
         } transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:w-64 h-full`}
       >
         <SideBar
+          setShowBuyCredits={setShowBuyCredits}
           credits={credits}
           setCredits={setCredits}
           selectedOption={selectedOption}
