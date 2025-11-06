@@ -9,8 +9,10 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import MainPage from "./pages/MainPage";
+import Purchases from "./pages/Purchases";
 import { auth } from "./firebase";
 import AuthButton from "./components/AuthButton";
+import AllPurchases from "./pages/AllPurchases";
 
 function App() {
   const [credits, setCredits] = useState(0);
@@ -43,6 +45,9 @@ function App() {
               )
             }
           />
+          <Route path="/allpurchases" element={<AllPurchases />} />
+          <Route path="/purchases/all" element={<AllPurchases />} />
+          <Route path="/purchases" element={<Purchases />} />
           <Route
             path="*"
             element={<Navigate to={user ? "/app" : "/login"} />}
@@ -62,16 +67,29 @@ function AuthWatcher({ setUser, setLoading }) {
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+
+      const currentPath = window.location.pathname;
+
       if (firebaseUser) {
-        navigate("/app", { replace: true });
+        // ✅ Only redirect to /app if user is on /login or /
+        if (currentPath === "/login" || currentPath === "/") {
+          navigate("/app", { replace: true });
+        }
       } else {
-        navigate("/login", { replace: true });
+        // ✅ Only redirect to /login if not already there
+        if (currentPath !== "/login") {
+          navigate("/login", { replace: true });
+        }
       }
     });
+
     return () => unsubscribe();
   }, [navigate, setUser, setLoading]);
 
   return null;
 }
+
+
+
 
 export default App;

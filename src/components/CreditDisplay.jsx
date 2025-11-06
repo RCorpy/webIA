@@ -41,23 +41,6 @@ function CreditDisplay({ credits, setCredits, setShowBuyCredits }) {
     }
   };
 
-  const addCredits = async (amount = 5) => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await api.post(`/credits/add?amount=${amount}`);
-      if (res.data.credits_left !== undefined) {
-        setCredits(res.data.credits_left);
-      }
-    } catch (err) {
-      setError(
-        "Failed to add credits: " +
-          (err.response?.data?.detail || err.message)
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
@@ -95,13 +78,6 @@ function CreditDisplay({ credits, setCredits, setShowBuyCredits }) {
           className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow transition disabled:opacity-50"
         >
           Refresh Credits
-        </button>
-        <button
-          onClick={() => addCredits(5)}
-          disabled={loading}
-          className="px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg shadow transition disabled:opacity-50"
-        >
-          +5 Credits
         </button>
         <button
           onClick={() => setShowBuyCredits(true)}
