@@ -13,6 +13,7 @@ import Purchases from "./pages/Purchases";
 import { auth } from "./firebase";
 import AuthButton from "./components/AuthButton";
 import AllPurchases from "./pages/AllPurchases";
+import Success from "./pages/Success";
 
 function App() {
   const [credits, setCredits] = useState(0);
@@ -45,6 +46,7 @@ function App() {
               )
             }
           />
+          <Route path="/success" element={<Success setCredits={setCredits} />} />
           <Route path="/allpurchases" element={<AllPurchases />} />
           <Route path="/purchases/all" element={<AllPurchases />} />
           <Route path="/purchases" element={<Purchases />} />
@@ -68,15 +70,16 @@ function AuthWatcher({ setUser, setLoading }) {
       setUser(firebaseUser);
       setLoading(false);
 
-      const currentPath = window.location.pathname;
+      // ✅ Safely read pathname
+      const currentPath = typeof window !== "undefined" ? window.location?.pathname || "/" : "/";
 
       if (firebaseUser) {
-        // ✅ Only redirect to /app if user is on /login or /
+        // ✅ Only redirect if on /login or /
         if (currentPath === "/login" || currentPath === "/") {
           navigate("/app", { replace: true });
         }
       } else {
-        // ✅ Only redirect to /login if not already there
+        // ✅ Only redirect if not already on /login
         if (currentPath !== "/login") {
           navigate("/login", { replace: true });
         }
@@ -88,6 +91,8 @@ function AuthWatcher({ setUser, setLoading }) {
 
   return null;
 }
+
+
 
 
 
