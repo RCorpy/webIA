@@ -12,7 +12,7 @@ export default function Results({ results }) {
   const downloadImage = async (url, filename) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/ai/download?url=${encodeURIComponent(url)}`,
+        `https://natvidai.com/api/ai/download?url=${encodeURIComponent(url)}`,
         { responseType: "blob" }
       );
       const blobUrl = URL.createObjectURL(res.data);

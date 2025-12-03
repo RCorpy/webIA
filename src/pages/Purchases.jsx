@@ -14,7 +14,7 @@ export default function Purchases() {
 
     const token = await user.getIdToken();
 
-    const res = await fetch("http://localhost:8000/api/purchases", {
+    const res = await fetch("https://natvidai.com/api/purchases", {
       headers: {
         "Authorization": `Bearer ${token}`,
       },

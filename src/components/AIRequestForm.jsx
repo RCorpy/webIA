@@ -11,7 +11,7 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
     for (let i = 0; i < retries; i++) {
       try {
         const statusRes = await axios.get(
-          `http://localhost:8000/api/ai/status/${taskId}`
+          `https://natvidai.com/api/ai/status/${taskId}`
         );
 
         if (statusRes.data.credits_left !== undefined) {
@@ -88,7 +88,7 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
 
       // 1️⃣ Create AI task
       const res = await axios.post(
-        "http://localhost:8000/api/ai",
+        "https://natvidai.com/api/ai",
         {
           input: prompt,
           model: model,          // ✅ Explicit model

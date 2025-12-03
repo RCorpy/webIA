@@ -23,7 +23,7 @@ export default function AllPurchases() {
     try {
       setLoading(true);
       const token = await user.getIdToken();
-      let url = "http://localhost:8000/api/purchases/all";
+      let url = "https://natvidai.com/api/purchases/all";
       if (filterEmail) {
         url += `?email=${encodeURIComponent(filterEmail)}`;
       }
