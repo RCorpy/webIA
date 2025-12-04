@@ -85,6 +85,15 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
           console.log("ERROR: model not supported", model)
         }
       }
+      //// TESTING /////  
+      console.log("[AIRequestForm] Sending AI request", {
+        input: prompt,
+        model,
+        parameters
+      });
+      console.log("[AIRequestForm] aspectRatio var:", aspectRatio, "type:", typeof aspectRatio);
+      //// TESTING /////  
+
 
       // 1️⃣ Create AI task
       const res = await axios.post(

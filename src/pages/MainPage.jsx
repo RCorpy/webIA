@@ -12,7 +12,7 @@ function MainPage({ credits, setCredits }) {
   const [results, setResults] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("text-to-image"); // text-to-image, image-to-image, text-to-video
-  const [model, setModel] = useState("default-model"); // placeholder
+  const [model, setModel] = useState("kontext-model"); // placeholder
   const [showBuyCredits, setShowBuyCredits] = useState(false);
   const [aspectRatio, setAspectRatio] = useState("1:1"); // default ratio
   const [dimensions, setDimensions] = useState({ width: 1024, height: 1024 }); // for Flux-Pro
