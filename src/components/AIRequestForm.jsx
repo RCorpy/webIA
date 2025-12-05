@@ -6,6 +6,8 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [customName, setCustomName] = useState("");
+
 
   const pollTaskStatus = async (taskId, retries = 20, interval = 2000) => {
     for (let i = 0; i < retries; i++) {
@@ -115,7 +117,7 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
       const outputUrl = await pollTaskStatus(task_id);
 
       // 3️⃣ Add result
-      addResult({ url: outputUrl, prompt });
+      addResult({ url: outputUrl, prompt, customName });
       //setPrompt("");
     } catch (err) {
       console.error(err);
@@ -132,6 +134,16 @@ export default function AIRequestForm({ setCredits, addResult, selectedOption, m
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
+      {/* Compact custom name input */}
+      <input
+        type="text"
+        placeholder="Name your image here..."
+        value={customName}
+        onChange={(e) => setCustomName(e.target.value)}
+        className="border-none bg-transparent text-sm px-2 py-1 w-45 focus:outline-none focus:ring-0"
+        maxLength={60}
+      />
+
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}

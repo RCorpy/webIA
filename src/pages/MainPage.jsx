@@ -30,8 +30,23 @@ function MainPage({ credits, setCredits }) {
   }, [model, inputImage]);
 
   const addResult = (newResult) => {
-    setResults((prev) => [newResult, ...prev]); // newest first
+    setResults((prev) => {
+      const index = prev.length + 1; // next image number
+
+      // choose filename
+      const finalName = newResult.customName?.trim()
+        ? `${newResult.customName}.png`
+        : `ai-result-${index}.png`;
+
+      const resultWithFile = {
+        ...newResult,
+        filename: finalName,
+      };
+
+      return [resultWithFile, ...prev];
+    });
   };
+
 
   return (
     <div className="flex h-screen bg-gray-50 relative">

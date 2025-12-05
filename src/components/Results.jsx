@@ -35,23 +35,41 @@ export default function Results({ results }) {
         {results.map((item, index) => (
           <div
             key={index}
-            className="relative rounded-lg shadow-sm bg-white overflow-hidden flex items-center justify-center"
+            className="relative rounded-lg shadow-sm bg-white overflow-hidden flex flex-col p-2"
             style={{ height: "400px" }}
           >
-            <img
-              src={item.url}
-              alt={`Result ${index + 1}`}
-              className="max-h-full max-w-full object-contain cursor-pointer"
-              onClick={() => setPreview(item.url)}
-            />
-            <button
-              onClick={() => downloadImage(item.url, `ai-result-${index + 1}.png`)}
-              className="absolute top-2 right-2 bg-transparent hover:bg-black/30 text-gray-800 p-1 rounded-full shadow z-10"
-            >
-              ⬇️
-            </button>
-          </div>
 
+            {/* Top bar */}
+            <div className="w-full flex items-center justify-between mb-1 px-1">
+
+              {/* Filename (extension removed) */}
+              <div
+                className="text-xs font-medium text-gray-700 truncate max-w-[75%] cursor-pointer hover:text-gray-900 transition"
+                onClick={() => console.log("Future rename:", item.filename)}
+              >
+                {item.filename.replace(/\.[^/.]+$/, "")}
+              </div>
+
+              {/* Download button */}
+              <button
+                onClick={() => downloadImage(item.url, item.filename)}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-2 py-1 rounded transition"
+              >
+                ⬇️
+              </button>
+            </div>
+
+            {/* Image */}
+            <div className="flex-1 flex items-center justify-center">
+              <img
+                src={item.url}
+                alt={item.filename}
+                className="max-h-full max-w-full object-contain cursor-pointer"
+                onClick={() => setPreview(item.url)}
+              />
+            </div>
+
+          </div>
         ))}
       </div>
 
